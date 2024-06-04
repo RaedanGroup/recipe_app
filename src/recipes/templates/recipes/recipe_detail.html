@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ recipe.name }} - Recipe Detail</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 50px 0;
+            background-color: #4CAF50;
+            color: white;
+        }
+        .header h1 {
+            font-size: 32px;
+            margin: 0;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .recipe-detail {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .recipe-detail img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .recipe-info {
+            width: 100%;
+            text-align: left;
+        }
+        .recipe-info p {
+            margin: 10px 0;
+        }
+        .ingredients-list {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{ recipe.name }}</h1>
+        </div>
+        <div class="content">
+            <div class="recipe-detail">
+                <img src="{{ recipe.pic.url }}" alt="{{ recipe.name }}">
+                <div class="recipe-info">
+                    <p><strong>Cooking Time:</strong> {{ recipe.cooking_time }} minutes</p>
+                    <p><strong>Difficulty:</strong> {{ recipe.difficulty }}</p>
+                    <h2>Ingredients</h2>
+                    <ul class="ingredients-list">
+                        {% for ingredient in recipe.return_ingredients_as_list %}
+                            <li>{{ ingredient }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

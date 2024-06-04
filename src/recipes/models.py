@@ -1,11 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.shortcuts import reverse
 
 # Create your models here.
 class Recipe(models.Model):
     name = models.CharField(max_length=50)
     cooking_time = models.IntegerField()
     ingredients = models.TextField()
+    pic = models.ImageField(upload_to='recipe_pics', default='no_picture.jpg')
     difficulty = models.CharField(max_length=20, blank=True, null=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 

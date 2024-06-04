@@ -1,0 +1,100 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            position: relative;
+            text-align: center;
+            color: white;
+            background-image: url("{% static 'recipes/images/recipe-card.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            padding: 50px 0;
+        }
+        .header h1 {
+            position: relative;
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .recipe {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+        .recipe:hover {
+            background-color: #f0f0f0;
+        }
+        .recipe:last-child {
+            border-bottom: none;
+        }
+        .recipe img {
+            max-width: 150px;
+            margin-right: 20px;
+        }
+        .recipe a {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Recipe List</h1>
+        </div>
+        <div class="content">
+            {% if recipes %}
+                <ul>
+                    {% for recipe in recipes %}
+                        <li class="recipe">
+                            <a href="{% url 'recipes:recipe_detail' recipe.id %}">
+                                <img src="{{ recipe.pic.url }}" alt="{{ recipe.name }}">
+                                <div>
+                                    <h2>{{ recipe.name }}</h2>
+                                    <p>Cooking Time: {{ recipe.cooking_time }} minutes</p>
+                                    <p>Difficulty: {{ recipe.difficulty }}</p>
+                                    <p>Ingredients: {{ recipe.ingredients }}</p>
+                                </div>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No recipes found.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
