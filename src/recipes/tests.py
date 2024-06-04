@@ -1,13 +1,25 @@
 from django.test import TestCase
+from django.urls import reverse
 from django.contrib.auth.models import User
 from .models import Recipe
-
-# Create your tests here.
 
 class RecipeModelTests(TestCase):
     def setUp(self):
         # Create a user for the tests
         self.user = User.objects.create_user(username='testuser', password='12345')
+        # Create recipes for testing
+        self.recipe1 = Recipe.objects.create(
+            name="Recipe One",
+            cooking_time=10,
+            ingredients="flour, sugar, eggs",
+            created_by=self.user
+        )
+        self.recipe2 = Recipe.objects.create(
+            name="Recipe Two",
+            cooking_time=20,
+            ingredients="flour, sugar, eggs, milk",
+            created_by=self.user
+        )
 
     def test_create_recipe(self):
         # Test creating a recipe
@@ -76,3 +88,38 @@ class RecipeModelTests(TestCase):
         )
         recipe.calculate_difficulty()
         self.assertEqual(recipe.difficulty, "Hard")
+
+    def test_recipe_list_view(self):
+        # Test the recipe list view
+        response = self.client.get(reverse('recipes:recipe_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'recipes/recipe_list.html')
+        self.assertContains(response, self.recipe1.name)
+        self.assertContains(response, self.recipe2.name)
+
+    def test_recipe_detail_view(self):
+        # Test the recipe 1 detail view
+        response = self.client.get(reverse('recipes:recipe_detail', kwargs={'pk': self.recipe1.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'recipes/recipe_detail.html')
+        self.assertContains(response, self.recipe1.name)
+        self.assertContains(response, self.recipe1.cooking_time)
+        self.assertContains(response, self.recipe1.difficulty)
+        
+        # Check individual Rec1 ingredients
+        ingredients_list = self.recipe1.return_ingredients_as_list()
+        for ingredient in ingredients_list:
+            self.assertContains(response, ingredient)
+
+        # Test the recipe 1 detail view
+        response = self.client.get(reverse('recipes:recipe_detail', kwargs={'pk': self.recipe2.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'recipes/recipe_detail.html')
+        self.assertContains(response, self.recipe2.name)
+        self.assertContains(response, self.recipe2.cooking_time)
+        self.assertContains(response, self.recipe2.difficulty)
+        
+        # Check individual Rec2 ingredients
+        ingredients_list = self.recipe2.return_ingredients_as_list()
+        for ingredient in ingredients_list:
+            self.assertContains(response, ingredient)
