@@ -13,64 +13,75 @@
             margin: 0;
             padding: 0;
         }
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
         .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            text-align: center;
         }
         .header {
+            position: relative;
             text-align: center;
-            padding: 50px 0;
-            background-color: #4CAF50;
             color: white;
+            background-image: url(/static/recipes/images/recipe-card.jpg);
+            background-size: cover;
+            background-position: center;
+            padding: 200px 0;
+            cursor: pointer;
+            border: rgba(100, 40, 40);
+            border-width: 20px;
+            border-style: inset;
         }
-        .content {
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        .header h1 {
+            position: relative;
+            display: inline-block;
+            background: rgba(40, 30, 20, 0.8);
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: xxx-large;
+            margin: 0;
         }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            margin: 10px 0;
-        }
-        .footer {
-            text-align: center;
-            padding: 20px 0;
+        .subtext {
             margin-top: 20px;
-            background-color: #4CAF50;
-            color: white;
+            font-size: large;
+            color: #333;
         }
     </style>
 </head>
 <body>
+    <div class="navbar">
+        <a href="{% url 'recipes:home' %}">Home</a>
+        <a href="/admin/">Admin</a>
+    </div>
     <div class="container">
-        <div class="header">
-            <h1>Recipe App - Under Development</h1>
+        <div id="clickable-header" class="header">
+            <h1>The Recipe App</h1>
         </div>
-        <div class="content">
-            <img src="{% static 'recipes/images/recipe-card.jpg' %}" alt="home" width="600" height="300">
-            <h1>User Goals</h1>
-            <p>Our users will be able to create and modify recipes with ingredients, cooking time, and an automatically calculated difficulty parameter. Users will also be able to search for recipes by ingredient.</p>
-            
-            <h1>Key Features</h1>
-            <ul>
-                <li>Allow for user authentication, login, and logout.</li>
-                <li>Let users search for recipes according to ingredients.</li>
-                <li>Automatically rate each recipe by difficulty level.</li>
-                <li>Receive user input and handle errors appropriately.</li>
-                <li>Display more details on each recipe if the user asks for that.</li>
-                <li>Add user recipes to an SQLite database.</li>
-                <li>Include a Django Admin dashboard for working with database entries.</li>
-                <li>Show statistics and visualizations based on trends and data analysis.</li>
-            </ul>
+        <div class="subtext">
+            <p>(Welcome. Please click &uarr; to enter.)</p>
         </div>
     </div>
+
+    <script>
+        document.getElementById('clickable-header').addEventListener('click', function() {
+            window.location.href = "{% url 'recipes:recipe_list' %}";
+        });
+    </script>
 </body>
 </html>
