@@ -7,3 +7,9 @@
    <button type="submit" >search</button>
 
 </form> 
+
+{% if recipes_df %}
+   {{recipes_df|safe}} 
+{% else %}
+   <h3> no data</h3>
+{% endif %}
