@@ -9,7 +9,9 @@
 </form> 
 
 {% if recipes_df %}
-   {{recipes_df|safe}} 
+   {{recipes_df|safe}}
+   <br>
+   <img src="data:image/png;base64, {{chart|safe}}" alt="chart">
 {% else %}
    <h3> no data</h3>
 {% endif %}

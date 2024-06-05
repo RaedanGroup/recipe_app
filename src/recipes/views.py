@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LogoutView as AuthLogoutView
 from .forms import RecipeSearchForm
 import pandas as pd
-
+from .utils import get_chart
 
 # Create your views here.
 def home(request):
@@ -14,6 +14,7 @@ def home(request):
 def search(request):
     form = RecipeSearchForm(request.POST or None)
     recipes_df = None
+    chart = None
 
     if request.method == 'POST':
             recipe_name = request.POST.get('recipe_name')
@@ -21,12 +22,14 @@ def search(request):
 
             qs = Recipe.objects.filter(name__icontains=recipe_name)
             if qs:
-                 recipes_df = pd.DataFrame(qs.values())
-                 recipes_df = recipes_df.to_html()
+                recipes_df = pd.DataFrame(qs.values())
+                chart = get_chart(chart_type, recipes_df, labels=recipes_df['name'].values)
+                recipes_df = recipes_df.to_html()
 
     context = {
         'form': form,
         'recipes_df': recipes_df,
+        'chart': chart
     }
 
     return render(request, 'recipes/recipes_search.html', context)
