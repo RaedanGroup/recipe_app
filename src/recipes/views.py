@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from .models import Recipe
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LogoutView as AuthLogoutView
 
 
 # Create your views here.
@@ -17,3 +18,6 @@ class RecipeDetailView(LoginRequiredMixin, DetailView):
     model = Recipe
     template_name = 'recipes/recipe_detail.html'
     context_object_name = 'recipe'
+
+class LogoutView(AuthLogoutView):
+    template_name = 'recipes/success.html'
