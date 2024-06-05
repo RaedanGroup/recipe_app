@@ -1,0 +1,104 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Recipe App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .header {
+            position: relative;
+            text-align: center;
+            color: white;
+            background-image: url(/static/recipes/images/recipe-card.jpg);
+            background-size: cover;
+            background-position: center;
+            padding: 100px 0;
+            margin-top: 5%;
+            border: rgba(100, 40, 40);
+            border-width: 20px;
+            border-style: inset;
+        }
+        .header h1 {
+            position: relative;
+            display: flex;
+            background: rgba(40, 30, 20, 0.8);
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: xxx-large;
+            margin: 0 auto;
+            width: 70%;
+            justify-content: center;
+         }
+        .subtext {
+            margin-top: 20px;
+            font-size: large;
+            color: #333;
+        }
+        .login-form {
+            background: rgba(40, 30, 20, 0.8);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            text-align: left;
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+        .login-form input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            display: block;
+            margin: 10px auto;
+        }
+        .login-form button {
+            background-color: #642828;
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            cursor: pointer;
+            width: calc(100% - 20px);
+            border-radius: 5px;
+            display: block;
+            margin: 10px auto;
+        }
+        .login-form button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="login-form">
+               <h1>Login</h1>
+               {% if error_message %}
+                  <p style="color: red;">{{ error_message }}</p>
+               {% endif %}
+               <form action="" method="POST">
+                  {% csrf_token %}
+                  {{ form.as_p }}
+                  <button type="submit">Login</button>
+               </form>
+            </div>
+      </div>
+    </div>
+</body>
+</html>
