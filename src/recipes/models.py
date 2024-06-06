@@ -1,8 +1,8 @@
+# models.py
 from django.db import models
 from django.contrib.auth.models import User
 from django.shortcuts import reverse
 
-# Create your models here.
 class Recipe(models.Model):
     name = models.CharField(max_length=50)
     cooking_time = models.IntegerField()
