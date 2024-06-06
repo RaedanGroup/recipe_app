@@ -1,7 +1,9 @@
+# tests.py
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from .models import Recipe
+from django.core.exceptions import ValidationError
 
 class RecipeModelTests(TestCase):
     def setUp(self):
@@ -91,6 +93,7 @@ class RecipeModelTests(TestCase):
 
     def test_recipe_list_view(self):
         # Test the recipe list view
+        self.client.login(username='testuser', password='12345')
         response = self.client.get(reverse('recipes:recipe_list'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'recipes/recipe_list.html')
@@ -99,6 +102,7 @@ class RecipeModelTests(TestCase):
 
     def test_recipe_detail_view(self):
         # Test the recipe 1 detail view
+        self.client.login(username='testuser', password='12345')
         response = self.client.get(reverse('recipes:recipe_detail', kwargs={'pk': self.recipe1.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'recipes/recipe_detail.html')
@@ -111,7 +115,7 @@ class RecipeModelTests(TestCase):
         for ingredient in ingredients_list:
             self.assertContains(response, ingredient)
 
-        # Test the recipe 1 detail view
+        # Test the recipe 2 detail view
         response = self.client.get(reverse('recipes:recipe_detail', kwargs={'pk': self.recipe2.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'recipes/recipe_detail.html')
@@ -123,3 +127,51 @@ class RecipeModelTests(TestCase):
         ingredients_list = self.recipe2.return_ingredients_as_list()
         for ingredient in ingredients_list:
             self.assertContains(response, ingredient)
+
+    def test_field_lengths(self):
+        recipe = Recipe(
+            name="A" * 51,  # This should be 50 characters or less
+            cooking_time=15,
+            ingredients="flour, sugar, eggs",
+            created_by=self.user
+        )
+        with self.assertRaises(ValidationError):
+            recipe.full_clean()  # This will validate the model
+
+        recipe.name = "A" * 50  # Adjust to valid length
+        try:
+            recipe.full_clean()  # Validate again
+        except ValidationError:
+            self.fail("ValidationError raised with valid name length")
+
+
+    def test_pagination(self):
+        # Ensure the test user is logged in
+        self.client.login(username='testuser', password='12345')
+
+        # Create more recipes if necessary to test pagination
+        for i in range(1, 11):  # Adjust the range as needed
+            Recipe.objects.create(
+                name=f"Recipe {i}",
+                cooking_time=10,
+                ingredients="flour, sugar, eggs",
+                created_by=self.user
+            )
+
+        response = self.client.get(reverse('recipes:recipe_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Recipe 1')
+        self.assertContains(response, 'Recipe 10')
+        self.assertTemplateUsed(response, 'recipes/recipe_list.html')
+
+
+    def test_login_protection(self):
+        # Test login protection for list view
+        response = self.client.get(reverse('recipes:recipe_list'))
+        self.assertNotEqual(response.status_code, 200)  # Should redirect to login page
+        self.assertRedirects(response, f"{reverse('login')}?next={reverse('recipes:recipe_list')}")
+        
+        # Test login protection for detail view
+        response = self.client.get(reverse('recipes:recipe_detail', kwargs={'pk': self.recipe1.pk}))
+        self.assertNotEqual(response.status_code, 200)  # Should redirect to login page
+        self.assertRedirects(response, f"{reverse('login')}?next={reverse('recipes:recipe_detail', kwargs={'pk': self.recipe1.pk})}")
