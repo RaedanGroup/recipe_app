@@ -1,9 +1,11 @@
-# tests.py
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from .models import Recipe
 from django.core.exceptions import ValidationError
+from .forms import RecipeForm
+from django.core.files.uploadedfile import SimpleUploadedFile
+import os
 
 class RecipeModelTests(TestCase):
     def setUp(self):
@@ -144,7 +146,6 @@ class RecipeModelTests(TestCase):
         except ValidationError:
             self.fail("ValidationError raised with valid name length")
 
-
     def test_pagination(self):
         # Ensure the test user is logged in
         self.client.login(username='testuser', password='12345')
@@ -164,7 +165,6 @@ class RecipeModelTests(TestCase):
         self.assertContains(response, 'Recipe 10')
         self.assertTemplateUsed(response, 'recipes/recipe_list.html')
 
-
     def test_login_protection(self):
         # Test login protection for list view
         response = self.client.get(reverse('recipes:recipe_list'))
@@ -175,3 +175,53 @@ class RecipeModelTests(TestCase):
         response = self.client.get(reverse('recipes:recipe_detail', kwargs={'pk': self.recipe1.pk}))
         self.assertNotEqual(response.status_code, 200)  # Should redirect to login page
         self.assertRedirects(response, f"{reverse('login')}?next={reverse('recipes:recipe_detail', kwargs={'pk': self.recipe1.pk})}")
+
+    def test_recipe_form_valid(self):
+        # Ensure the form is valid with correct data
+        form_data = {
+            'name': 'New Recipe',
+            'cooking_time': 30,
+            'ingredients': 'ingredient1, ingredient2',
+            'pic': None  # Assuming 'pic' field is optional for this test
+        }
+        form = RecipeForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+    def test_recipe_form_invalid(self):
+        # Ensure the form is invalid with incorrect data
+        form_data = {
+            'name': '',  # Name is required
+            'cooking_time': 30,
+            'ingredients': 'ingredient1, ingredient2',
+            'pic': None  # Assuming 'pic' field is optional for this test
+        }
+        form = RecipeForm(data=form_data)
+        self.assertFalse(form.is_valid())
+
+    def test_recipe_form_submission(self):
+        self.client.login(username='testuser', password='12345')
+
+        # Use the existing image
+        image_path = os.path.join(os.path.dirname(__file__), '..', 'media', 'no_picture.jpg')
+        with open(image_path, 'rb') as img:
+            image_file = SimpleUploadedFile(name='test_image.jpg', content=img.read(), content_type='image/jpeg')
+
+        form_data = {
+            'name': 'New Recipe',
+            'cooking_time': 30,
+            'ingredients': 'flour, sugar, eggs',
+            'pic': image_file
+        }
+        response = self.client.post(reverse('recipes:submit_recipe'), data=form_data, follow=True)
+        
+        # Print response content for debugging if the status code is not 200
+        if response.status_code != 200:
+            print(response.content)
+        
+        self.assertEqual(response.status_code, 200)
+
+        # Check if the recipe was created
+        new_recipe = Recipe.objects.get(name='New Recipe')
+        self.assertEqual(new_recipe.cooking_time, 30)
+        self.assertEqual(new_recipe.ingredients, 'flour, sugar, eggs')
+        self.assertEqual(new_recipe.created_by, self.user)
