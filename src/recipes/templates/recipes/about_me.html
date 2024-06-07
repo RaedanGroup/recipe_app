@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit New Recipe</title>
+    <title>About Me</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -50,6 +50,7 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            text-align: center;
         }
         .header {
             text-align: center;
@@ -61,48 +62,21 @@
             font-size: 32px;
             margin: 0;
         }
-        .form-container {
+        .content {
             background-color: white;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
-            display: flex;
-            justify-content: center;
         }
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            max-width: 600px;
+        .content a {
+            display: block;
+            margin: 10px 0;
+            font-size: 18px;
+            color: #2e332e;
+            text-decoration: none;
         }
-        label {
-            font-size: larger;
-            font-weight: bolder;
+        .content a:hover {
             color: rgba(100, 40, 40);
-            margin-bottom: 5px;
-        }
-        input[type="text"], input[type="number"], input[type="file"], textarea {
-            padding: 10px;
-            border: 2px solid rgba(100, 40, 40);
-            border-radius: 5px;
-            background-color: #c7c7c7;
-            width: 100%;
-        }
-        textarea {
-            height: 60px; /* Make the ingredients field only 3 lines tall */
-        }
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #2e332e;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: rgba(100, 40, 40);
         }
     </style>
 </head>
@@ -111,46 +85,24 @@
         <div class="left">
             <a href="{% url 'recipes:recipe_list' %}">Recipe List</a>
             <a href="{% url 'recipes:search' %}">Search</a>
+            <a href="{% url 'recipes:submit_recipe' %}">New Recipe</a>
         </div>
         <div class="right">
-            <a href="{% url 'recipes:about_me' %}">About Me</a>
             <a href="/admin/" target="_blank">Admin</a>
             <a href="{% url 'recipes:logout' %}">Logout</a>
         </div>
     </div>
     <div class="container">
         <div class="header">
-            <h1>Submit a New Recipe</h1>
+            <h1>About Me</h1>
         </div>
-        <div class="form-container">
-            <form id="recipe-form" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Submit Recipe</button>
-            </form>
+        <div class="content">
+            <p>Thank you for checking out my Python and Django demo.<br><br>To learn more about my work please:</p>
+            <a href="https://raedangroup.github.io/portfolio-website/work.html" target="_blank" style="font-size: x-large;">Click here to check out my Portfolio.</a>
+            <p>-or-</p>
+            <a href="https://github.com/RaedanGroup" target="_blank" style="font-size: x-large;">Click here to check out my Github.</a>
+            <br><p>Have a great rest of your day!</p>
         </div>
     </div>
-
-    <script>
-        document.getElementById('recipe-form').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            
-            const formData = new FormData(this);
-            const response = await fetch("{% url 'recipes:submit_recipe' %}", {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                },
-                body: formData
-            });
-            
-            if (response.ok) {
-                alert('Recipe submitted successfully!');
-                this.reset();
-            } else {
-                alert('Error submitting recipe.');
-            }
-        });
-    </script>
 </body>
 </html>
