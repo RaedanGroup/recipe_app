@@ -1,16 +1,19 @@
 # views.py
 from django.shortcuts import render, reverse, redirect
 from django.views.generic import ListView, DetailView
-from .models import Recipe
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LogoutView as AuthLogoutView
-from .forms import RecipeSearchForm
-import pandas as pd
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from .models import Recipe
+from .forms import RecipeSearchForm, RecipeForm
 from .utils import get_chart, rename_columns
+import pandas as pd
 
 def home(request):
     return render(request, 'recipes/recipes_home.html')
 
+@login_required
 def search(request):
     form = RecipeSearchForm(request.POST or None)
     recipes_df = None
@@ -46,6 +49,22 @@ def search(request):
     }
 
     return render(request, 'recipes/recipes_search.html', context)
+
+@login_required
+def submit_recipe(request):
+    if request.method == 'POST':
+        form = RecipeForm(request.POST, request.FILES)
+        if form.is_valid():
+            recipe = form.save(commit=False)
+            recipe.created_by = request.user
+            recipe.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        else:
+            return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
+    else:
+        form = RecipeForm()
+    
+    return render(request, 'recipes/new_recipe.html', {'form': form})
 
 class RecipeListView(LoginRequiredMixin, ListView):
     model = Recipe

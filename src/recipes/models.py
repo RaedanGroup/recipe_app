@@ -28,7 +28,11 @@ class Recipe(models.Model):
             self.difficulty = "Intermediate"
         else:
             self.difficulty = "Hard"
-        self.save()
+
+    # Override the save method to calculate difficulty before saving a new recipe via the form
+    def save(self, *args, **kwargs):
+        self.calculate_difficulty()
+        super().save(*args, **kwargs)
 
     # string representation of the model
     def __str__(self):
